@@ -1,0 +1,637 @@
+/* ==========================================================================
+   styles.css
+   ==========
+   Goal: Make the Tutor Match prototype look like it belongs on a Whitman site.
+
+   Whitman Aesthetic Rules (from your instructions):
+   - Palette: Blue/Gold + clean neutrals (lots of whitespace).
+   - Tone: academic, professional, welcoming (not "salesy").
+   - Typography:
+       Headlines: Lora (serif)
+       Body: "Vito" (if unavailable) -> Montserrat -> Calibri -> system sans-serif
+   - Accessibility:
+       * Avoid Yellow text on White (low contrast).
+       * Avoid White text on Yellow (also risky).
+       * Use Blue text on light backgrounds, White text on dark blue backgrounds.
+
+   NOTE ABOUT FONTS:
+   - "Vito" is not a standard Google font (often a brand font).
+   - We'll use:
+       Headlines: Lora (Google Font)
+       Body: Montserrat (Google Font) as fallback for Vito-style readability.
+   - If you later host Whitman's actual font files, you can add @font-face.
+   ========================================================================== */
+
+
+/* --------------------------------------------------------------------------
+   1) CSS RESET / BASE RULES
+   -------------------------------------------------------------------------- */
+
+/* Use a modern box model so padding/border do not break layout sizing. */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    /* Technique: box-sizing reset */
+}
+
+/* Remove default margin so we control whitespace ourselves. */
+html,
+body {
+    margin: 0;
+    /* Technique: reset default browser margin */
+    padding: 0;
+    /* Technique: reset default browser padding */
+}
+
+/* --------------------------------------------------------------------------
+   2) BRAND VARIABLES (WHITMAN BLUE & GOLD)
+   -------------------------------------------------------------------------- */
+
+/* CSS variables = easy global theming. */
+:root {
+    /* Primary colors (your exact hex codes) */
+    --whitman-blue: #002868;
+    --whitman-yellow: #ffc627;
+
+    /* Secondary */
+    --navy: #010e30;
+    --white: #ffffff;
+
+    /* Tertiary neutrals */
+    --cool-grey: #eff2f9;
+    --light-blue: #6cb2e2;
+
+    /* Text colors */
+    --text-dark: #0b1220;
+    /* deep neutral for readability */
+    --text-muted: #4a5568;
+    /* softer grey for helper text */
+
+    /* Shadows (subtle, academic style) */
+    --shadow-sm: 0 2px 10px rgba(1, 14, 48, 0.08);
+    --shadow-md: 0 10px 30px rgba(1, 14, 48, 0.12);
+
+    /* Borders and rounding */
+    --border: 1px solid rgba(0, 40, 104, 0.12);
+    --radius: 14px;
+
+    /* Spacing scale (consistent rhythm) */
+    --space-1: 6px;
+    --space-2: 10px;
+    --space-3: 14px;
+    --space-4: 18px;
+    --space-5: 24px;
+    --space-6: 32px;
+    --space-7: 44px;
+
+    /* Layout width: keep content centered and readable */
+    --max-width: 1050px;
+
+    /* Focus ring (accessibility) */
+    --focus-ring: 0 0 0 4px rgba(108, 178, 226, 0.35);
+}
+
+/* --------------------------------------------------------------------------
+   3) TYPOGRAPHY (LORA for headlines, MONTSERRAT for body)
+   -------------------------------------------------------------------------- */
+
+/* Import Google Fonts (allowed in pure CSS via @import). */
+@import url("https://fonts.googleapis.com/css2?family=Lora:wght@500;600;700&family=Montserrat:wght@400;500;600;700&display=swap");
+
+/* Set the base body font and overall page look. */
+body {
+    font-family: "Vito", "Montserrat", Calibri, "Segoe UI", Arial, sans-serif;
+    /* Body font stack */
+    color: var(--text-dark);
+    /* High-contrast readable text */
+    background: var(--cool-grey);
+    /* Very subtle cool grey background */
+    line-height: 1.5;
+    /* Comfortable reading line-height */
+    -webkit-font-smoothing: antialiased;
+    /* Improve font rendering on WebKit */
+    -moz-osx-font-smoothing: grayscale;
+    /* Improve font rendering on macOS */
+}
+
+/* Headings use Lora for academic serif feel. */
+h1,
+h2,
+h3,
+h4 {
+    font-family: "Lora", Georgia, "Times New Roman", serif;
+    /* Headline stack */
+    color: var(--navy);
+    /* Dark blue for headings on light background */
+    margin: 0 0 var(--space-3) 0;
+    /* consistent margin rhythm */
+    letter-spacing: 0.2px;
+    /* slight refinement */
+}
+
+/* Improve heading sizing (hierarchy). */
+h1 {
+    font-size: 1.6rem;
+    line-height: 1.2;
+}
+
+h2 {
+    font-size: 1.35rem;
+    line-height: 1.25;
+}
+
+h3 {
+    font-size: 1.15rem;
+    line-height: 1.3;
+}
+
+h4 {
+    font-size: 1rem;
+    line-height: 1.3;
+}
+
+/* Paragraph spacing (keeps layout airy). */
+p {
+    margin: 0 0 var(--space-4) 0;
+}
+
+/* Muted helper text class used throughout HTML */
+.muted {
+    color: var(--text-muted);
+}
+
+/* Small helper hint text */
+.hint {
+    margin-top: var(--space-1);
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   4) APP LAYOUT STRUCTURE
+   -------------------------------------------------------------------------- */
+
+/* Header styling: Whitman blue anchor bar. */
+.app-header {
+    background: linear-gradient(135deg, var(--whitman-blue), var(--navy));
+    /* academic gradient */
+    color: var(--white);
+    /* white text on dark background for accessibility */
+    padding: var(--space-6) var(--space-5);
+    /* generous whitespace */
+    box-shadow: var(--shadow-sm);
+    /* subtle depth */
+}
+
+/* Center header content and limit width. */
+.app-header {
+    display: flex;
+    /* Technique: Flexbox layout */
+    align-items: center;
+    /* vertical align */
+    justify-content: space-between;
+    /* left and right columns */
+    gap: var(--space-5);
+    /* spacing between columns */
+}
+
+/* Constrain header content width while keeping background full width. */
+.app-header .header-left,
+.app-header .header-right {
+    max-width: var(--max-width);
+}
+
+/* Title and subtitle in header */
+.app-title {
+    color: var(--white);
+    /* white on blue */
+    margin: 0;
+}
+
+.app-subtitle {
+    margin: var(--space-1) 0 0 0;
+    color: rgba(255, 255, 255, 0.85);
+    /* slightly softer white */
+    font-size: 0.95rem;
+}
+
+/* Right header: badge + logout aligned */
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+/* Main area centered with whitespace */
+.app-main {
+    max-width: var(--max-width);
+    /* readable line length */
+    margin: 0 auto;
+    /* center horizontally */
+    padding: var(--space-7) var(--space-5);
+    /* generous whitespace */
+}
+
+/* Footer: navy anchor */
+.app-footer {
+    background: var(--navy);
+    padding: var(--space-5);
+    text-align: center;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+/* --------------------------------------------------------------------------
+   5) SCREEN VISIBILITY CONTROL
+   -------------------------------------------------------------------------- */
+
+/* Each screen gets spacing */
+.screen {
+    display: block;
+    /* default display */
+}
+
+/* Hidden class used by JavaScript to hide screens */
+.hidden {
+    display: none !important;
+    /* force hide */
+}
+
+/* --------------------------------------------------------------------------
+   6) CARDS (Whitman-like content blocks)
+   -------------------------------------------------------------------------- */
+
+/* Card: clean white panels with subtle border and shadow */
+.card {
+    background: var(--white);
+    border: var(--border);
+    border-radius: var(--radius);
+    padding: var(--space-6);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: var(--space-6);
+}
+
+/* Add a nice “top accent bar” with Whitman yellow (sparingly!) */
+.card::before {
+    content: "";
+    /* required for pseudo-element */
+    display: block;
+    height: 4px;
+    width: 54px;
+    /* short accent, not loud */
+    background: var(--whitman-yellow);
+    border-radius: 999px;
+    margin-bottom: var(--space-4);
+}
+
+/* Divider line used inside cards */
+.divider {
+    border: none;
+    border-top: 1px solid rgba(0, 40, 104, 0.12);
+    margin: var(--space-5) 0;
+}
+
+/* --------------------------------------------------------------------------
+   7) FORMS (inputs, labels, selects)
+   -------------------------------------------------------------------------- */
+
+label {
+    display: block;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: var(--space-2);
+}
+
+/* A responsive grid for form controls */
+.form-grid {
+    display: grid;
+    /* Technique: CSS Grid */
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    /* 2 columns on desktop */
+    gap: var(--space-5);
+    /* spacing between fields */
+    margin-bottom: var(--space-5);
+}
+
+/* On small screens, switch to 1 column */
+@media (max-width: 720px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+        /* stack vertically */
+    }
+
+    .app-header {
+        flex-direction: column;
+        /* stack header items */
+        align-items: flex-start;
+    }
+
+    .header-right {
+        width: 100%;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+    }
+}
+
+/* Wrap each field */
+.form-field {
+    display: block;
+}
+
+/* Common styles for inputs, selects, textareas */
+input,
+select,
+textarea {
+    width: 100%;
+    padding: 12px 12px;
+    /* comfortable tap targets */
+    border-radius: 12px;
+    border: 1px solid rgba(0, 40, 104, 0.18);
+    background: var(--white);
+    color: var(--text-dark);
+    font-size: 1rem;
+    outline: none;
+    /* we'll replace with custom focus style */
+}
+
+/* Multi-select should be taller so it’s easier to use */
+select[multiple] {
+    min-height: 120px;
+}
+
+/* Textarea: allow vertical resizing only */
+textarea {
+    resize: vertical;
+}
+
+/* Focus styles (accessibility) */
+input:focus,
+select:focus,
+textarea:focus {
+    box-shadow: var(--focus-ring);
+    border-color: var(--light-blue);
+}
+
+/* Placeholder text color */
+::placeholder {
+    color: rgba(74, 85, 104, 0.7);
+}
+
+/* File inputs: keep them readable */
+.file-label {
+    display: inline-block;
+    font-weight: 600;
+    color: var(--navy);
+}
+
+/* Make the file input easier to click */
+.file-label input[type="file"] {
+    display: block;
+    margin-top: var(--space-2);
+}
+
+/* --------------------------------------------------------------------------
+   8) BUTTONS (Whitman style: calm, confident)
+   -------------------------------------------------------------------------- */
+
+.btn {
+    border: none;
+    cursor: pointer;
+    border-radius: 999px;
+    /* pill buttons */
+    padding: 12px 16px;
+    font-weight: 700;
+    font-size: 0.98rem;
+    transition: transform 0.08s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+}
+
+/* Primary button: Whitman Blue background with white text */
+.btn-primary {
+    background: var(--whitman-blue);
+    color: var(--white);
+    box-shadow: 0 6px 16px rgba(0, 40, 104, 0.18);
+}
+
+/* Secondary button: white background, blue border, blue text */
+.btn-secondary {
+    background: var(--white);
+    color: var(--whitman-blue);
+    border: 1px solid rgba(0, 40, 104, 0.22);
+}
+
+/* Danger button: keep it academic (not neon red) */
+.btn-danger {
+    background: #7a1f2b;
+    /* deep, muted red */
+    color: var(--white);
+}
+
+/* Hover styles (subtle, not loud) */
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+/* Active press */
+.btn:active {
+    transform: translateY(0px);
+    opacity: 0.95;
+}
+
+/* Actions row spacing */
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-top: var(--space-4);
+}
+
+/* --------------------------------------------------------------------------
+   9) USER BADGE (top right)
+   -------------------------------------------------------------------------- */
+
+.user-badge {
+    background: rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    color: var(--white);
+    padding: 10px 12px;
+    border-radius: 999px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* --------------------------------------------------------------------------
+   10) LISTS (requests, applications, availability, etc.)
+   -------------------------------------------------------------------------- */
+
+.list {
+    display: grid;
+    gap: var(--space-4);
+}
+
+/* Each list item will be a "mini card" inserted by JS */
+.list-item {
+    background: var(--white);
+    border: 1px solid rgba(0, 40, 104, 0.12);
+    border-radius: 14px;
+    padding: var(--space-5);
+    box-shadow: 0 6px 18px rgba(1, 14, 48, 0.06);
+}
+
+/* List item title style */
+.list-item h4 {
+    margin: 0 0 var(--space-2) 0;
+}
+
+/* Small metadata rows */
+.meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+
+/* --------------------------------------------------------------------------
+   11) RADIO ROW (role selection)
+   -------------------------------------------------------------------------- */
+
+.radio-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    margin: var(--space-4) 0 var(--space-5) 0;
+}
+
+/* Make radio labels clickable and tidy */
+.radio-row label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-weight: 600;
+    color: var(--navy);
+    margin: 0;
+    padding: 10px 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(0, 40, 104, 0.14);
+    background: rgba(239, 242, 249, 0.65);
+}
+
+/* --------------------------------------------------------------------------
+   12) PANELS (existing users panel)
+   -------------------------------------------------------------------------- */
+
+.panel {
+    margin-top: var(--space-5);
+    padding: var(--space-5);
+    border-radius: var(--radius);
+    background: rgba(239, 242, 249, 0.7);
+    border: 1px dashed rgba(0, 40, 104, 0.25);
+}
+
+/* --------------------------------------------------------------------------
+   13) PROFILE ROW (Tutor photo + controls)
+   -------------------------------------------------------------------------- */
+
+.profile-row {
+    display: flex;
+    gap: var(--space-5);
+    align-items: center;
+    margin-bottom: var(--space-5);
+}
+
+/* Stack on mobile */
+@media (max-width: 720px) {
+    .profile-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+/* Avatar image styling */
+.avatar {
+    width: 92px;
+    height: 92px;
+    border-radius: 50%;
+    border: 3px solid rgba(108, 178, 226, 0.35);
+    /* subtle light-blue ring */
+    object-fit: cover;
+    /* crop image nicely */
+    background: var(--cool-grey);
+    /* shows if image isn't loaded */
+    box-shadow: var(--shadow-sm);
+}
+
+/* Tutor profile controls */
+.profile-controls {
+    flex: 1;
+}
+
+/* Info grid under profile */
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-4);
+}
+
+/* Mobile stacking */
+@media (max-width: 720px) {
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   14) STATUS ROW (application status text)
+   -------------------------------------------------------------------------- */
+
+.status-row {
+    display: flex;
+    gap: var(--space-2);
+    align-items: baseline;
+    padding: var(--space-3);
+    border-radius: 12px;
+    border: 1px solid rgba(0, 40, 104, 0.12);
+    background: rgba(239, 242, 249, 0.55);
+}
+
+/* --------------------------------------------------------------------------
+   15) SMALL POLISH: LINKS, HR, ETC.
+   -------------------------------------------------------------------------- */
+
+a {
+    color: var(--whitman-blue);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Optional: subtle selection color */
+::selection {
+    background: rgba(255, 198, 39, 0.35);
+    /* Whitman yellow highlight */
+}
+
+/* --------------------------------------------------------------------------
+   16) DEFAULT AVATAR FALLBACK (NO PROFILE PICTURE)
+   -------------------------------------------------------------------------- */
+
+/*
+  We will set a default avatar in JavaScript by setting tutorAvatar.src to
+  a data URL (inline SVG). BUT as a backup, if src is empty and the image
+  fails to load, we give it a "placeholder" feel using background.
+*/
+.avatar[src=""] {
+    /* If the src is empty string, show a gentle background */
+    background: linear-gradient(135deg, rgba(108, 178, 226, 0.18), rgba(239, 242, 249, 0.9));
+}
+
+/* --------------------------------------------------------------------------
+   END OF FILE
+   -------------------------------------------------------------------------- */

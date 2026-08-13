@@ -1,0 +1,561 @@
+<!--
+  index.html
+  =========
+  This is the ONLY HTML file for the whole prototype.
+
+  Big idea (how the app works):
+  - We will build multiple "screens" (sections) inside this one page.
+  - JavaScript will SHOW one screen and HIDE the others.
+  - CSS will make it look nice.
+  - JavaScript will also fill lists (courses, tutors, requests, etc.) into empty containers.
+
+  IMPORTANT RULE FOR THIS PROTOTYPE:
+  - Admin must approve tutors for courses.
+  - After a tutor is approved for a course, when a student requests tutoring for that course,
+    the app will AUTOMATICALLY assign a tutor (in JavaScript) from the approved list.
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- The <meta charset> tells the browser what character set to use (UTF-8 supports most languages). -->
+    <meta charset="UTF-8" />
+
+    <!-- The viewport meta makes the page scale correctly on phones/tablets. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- The title shows in the browser tab. -->
+    <title>Whitman Tutor Match (Prototype)</title>
+
+    <!--
+      Link to external CSS file.
+      This is where ALL styling goes (colors, spacing, layout).
+    -->
+    <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+    <!--
+      A top header area that stays the same for the whole app.
+      We'll update the "current user" text using JavaScript.
+    -->
+    <header class="app-header">
+        <div class="header-left">
+            <!-- Simple app title -->
+            <h1 class="app-title">Tutor Match</h1>
+
+            <!-- Small subtitle / tagline -->
+            <p class="app-subtitle">Whitman College • Prototype</p>
+        </div>
+
+        <div class="header-right">
+            <!--
+          JavaScript will fill this with something like:
+          "Logged in as: Patrick (Student)"
+        -->
+            <div id="currentUserBadge" class="user-badge">
+                Not logged in
+            </div>
+
+            <!--
+          Log out button:
+          - JavaScript will attach a click event to this.
+          - It will clear "current user" and go back to the login screen.
+        -->
+            <button id="btnLogout" class="btn btn-secondary" type="button">
+                Log out
+            </button>
+        </div>
+    </header>
+
+    <!--
+      MAIN APP CONTAINER
+      - This wraps all our screens.
+      - Each screen is a <section>.
+      - JavaScript shows/hides sections by adding/removing a CSS class like "hidden".
+    -->
+    <main class="app-main">
+        <!-- =========================================================
+           SCREEN 1: AUTH / ROLE SELECTION (FAKE LOGIN FOR PROTOTYPE)
+           ========================================================= -->
+        <section id="screenAuth" class="screen">
+            <!-- Screen title -->
+            <h2>Welcome</h2>
+
+            <!-- Explain what this screen is -->
+            <p class="muted">
+                This prototype uses a simple role selector instead of real passwords.
+                Choose a role and create/select a profile to continue.
+            </p>
+
+            <!--
+          Role selection area:
+          - The user chooses Student / Tutor / Admin.
+          - JavaScript will store the chosen role.
+        -->
+            <div class="card">
+                <h3>Choose your role</h3>
+
+                <!-- Radio buttons: only one can be selected at a time -->
+                <div class="radio-row">
+                    <label>
+                        <input type="radio" name="role" value="student" checked />
+                        Student (needs a tutor)
+                    </label>
+
+                    <label>
+                        <input type="radio" name="role" value="tutor" />
+                        Tutor (helps students)
+                    </label>
+
+                    <label>
+                        <input type="radio" name="role" value="admin" />
+                        Admin (approves tutors)
+                    </label>
+                </div>
+
+                <!--
+            Basic profile fields.
+            JavaScript will use these to create a "current user" object.
+          -->
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label for="authName">Full name</label>
+                        <input id="authName" type="text" placeholder="e.g., Patrick Mulikuza" autocomplete="name" />
+                    </div>
+
+                    <div class="form-field">
+                        <label for="authEmail">Email (required)</label>
+                        <input id="authEmail" type="email" placeholder="e.g., mulikup@whitman.edu"
+                            autocomplete="email" />
+                    </div>
+
+                    <div class="form-field">
+                        <label for="authPhone">Phone / Text (optional)</label>
+                        <input id="authPhone" type="tel" placeholder="e.g., (509) 555-1234" autocomplete="tel" />
+                    </div>
+                </div>
+
+                <!-- Buttons for auth actions -->
+                <div class="actions">
+                    <!--
+              This button creates a new user profile in localStorage
+              and logs in as that new user.
+            -->
+                    <button id="btnCreateProfile" class="btn btn-primary" type="button">
+                        Create profile & continue
+                    </button>
+
+                    <!--
+              This button will open a simple list of existing demo users
+              (stored in localStorage) so you can quickly log in as them.
+            -->
+                    <button id="btnChooseExisting" class="btn btn-secondary" type="button">
+                        Choose existing demo user
+                    </button>
+                </div>
+
+                <!--
+            This area is hidden by default.
+            JavaScript will fill it with existing user buttons/cards.
+          -->
+                <div id="existingUsersPanel" class="panel hidden">
+                    <h4>Existing users</h4>
+                    <div id="existingUsersList" class="list">
+                        <!-- JavaScript will insert user items here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Utilities -->
+            <div class="card">
+                <h3>Demo utilities</h3>
+                <p class="muted">
+                    Helpful buttons while testing. (JavaScript will implement these.)
+                </p>
+
+                <div class="actions">
+                    <!--
+              Resets demo data:
+              - Clears localStorage state for this app
+              - Recreates seed data (courses, sample users)
+            -->
+                    <button id="btnResetDemo" class="btn btn-danger" type="button">
+                        Reset demo data
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- =========================================================
+           SCREEN 2: STUDENT DASHBOARD
+           ========================================================= -->
+        <section id="screenStudent" class="screen hidden">
+            <h2>Student Dashboard</h2>
+
+            <!-- Quick instructions -->
+            <p class="muted">
+                Choose a course, request tutoring, and the app will automatically assign
+                you an approved tutor for that course.
+            </p>
+
+            <!-- STUDENT: REQUEST TUTORING -->
+            <div class="card">
+                <h3>Request a tutor</h3>
+
+                <!-- Course search/filter row -->
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label for="studentCourseSearch">Search courses</label>
+                        <input id="studentCourseSearch" type="text" placeholder="Type: CS 167, MATH 125..." />
+                    </div>
+
+                    <div class="form-field">
+                        <label for="studentCourseSelect">Select a course</label>
+                        <select id="studentCourseSelect">
+                            <!-- JavaScript will populate options like: CS 167 -->
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Optional note from student -->
+                <div class="form-field">
+                    <label for="studentRequestNote">Note (optional)</label>
+                    <textarea id="studentRequestNote" rows="3"
+                        placeholder="Anything the tutor should know? (topics, schedule preferences, etc.)"></textarea>
+                </div>
+
+                <!-- Button to create a request -->
+                <div class="actions">
+                    <!--
+              JavaScript will:
+              - create a tutoring request object
+              - auto-assign a tutor (from approved tutors for that course)
+              - save to localStorage
+              - update the UI below
+            -->
+                    <button id="btnStudentRequestTutor" class="btn btn-primary" type="button">
+                        Request tutoring (auto-assign)
+                    </button>
+                </div>
+            </div>
+
+            <!-- STUDENT: MY REQUESTS -->
+            <div class="card">
+                <h3>My tutoring requests</h3>
+                <p class="muted">
+                    This list shows your requests and which tutor was assigned.
+                </p>
+
+                <!-- JavaScript will fill this list with request cards -->
+                <div id="studentRequestsList" class="list">
+                    <!-- Example item (inserted by JS) might show:
+                 - Course
+                 - Assigned tutor name + contact info
+                 - Status (pending/accepted/declined)
+            -->
+                </div>
+            </div>
+        </section>
+
+        <!-- =========================================================
+           SCREEN 3: TUTOR DASHBOARD
+           ========================================================= -->
+        <section id="screenTutor" class="screen hidden">
+            <h2>Tutor Dashboard</h2>
+
+            <p class="muted">
+                Apply to tutor courses, add your profile picture (optional), and manage your assigned requests.
+            </p>
+
+            <!-- TUTOR: PROFILE + APPLICATION -->
+            <div class="card">
+                <h3>My Tutor Profile</h3>
+
+                <!-- Profile picture area -->
+                <div class="profile-row">
+                    <!--
+              This image will show:
+              - Tutor's uploaded photo if available
+              - Otherwise a default avatar image (we'll do that in CSS/JS)
+            -->
+                    <img id="tutorAvatar" class="avatar" alt="Tutor profile picture" src="" />
+
+                    <div class="profile-controls">
+                        <p class="muted">
+                            Profile picture is optional. If you don’t upload one, students will see a default avatar.
+                        </p>
+
+                        <!--
+                File input for profile photo (image):
+                JavaScript can read it and store as base64 in localStorage (small images recommended).
+              -->
+                        <label class="file-label">
+                            Upload profile picture (optional)
+                            <input id="tutorPhotoInput" type="file" accept="image/*" />
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Tutor contact info display (pulled from auth profile) -->
+                <div class="info-grid">
+                    <div>
+                        <span class="muted">Email:</span>
+                        <strong id="tutorEmailDisplay">—</strong>
+                    </div>
+                    <div>
+                        <span class="muted">Phone/Text:</span>
+                        <strong id="tutorPhoneDisplay">—</strong>
+                    </div>
+                </div>
+
+                <hr class="divider" />
+
+                <h4>Apply to tutor</h4>
+
+                <!-- Tutor application form -->
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label for="tutorGpa">GPA (optional for prototype)</label>
+                        <input id="tutorGpa" type="number" step="0.01" min="0" max="4" placeholder="e.g., 3.75" />
+                    </div>
+
+                    <div class="form-field">
+                        <label for="tutorCourseSelect">Courses you want to tutor</label>
+                        <select id="tutorCourseSelect" multiple>
+                            <!-- JavaScript will populate course options -->
+                        </select>
+                        <p class="hint">
+                            Tip: Hold Ctrl (Windows) or Command (Mac) to select multiple.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Transcript upload (PDF) -->
+                <div class="form-field">
+                    <label class="file-label">
+                        Upload transcript PDF (optional for prototype)
+                        <!--
+                In a pure localStorage prototype, we usually store just the filename.
+                (Real PDF storage would need a server or Firebase Storage.)
+              -->
+                        <input id="tutorTranscriptInput" type="file" accept="application/pdf" />
+                    </label>
+
+                    <!-- Show selected transcript file name -->
+                    <p class="muted">
+                        Selected transcript:
+                        <span id="tutorTranscriptName">None</span>
+                    </p>
+                </div>
+
+                <!-- Application status display -->
+                <div class="status-row">
+                    <span class="muted">Application status:</span>
+                    <strong id="tutorApplicationStatus">Not submitted</strong>
+                </div>
+
+                <!-- Submit application button -->
+                <div class="actions">
+                    <button id="btnTutorSubmitApplication" class="btn btn-primary" type="button">
+                        Submit application
+                    </button>
+                </div>
+            </div>
+
+            <!-- TUTOR: AVAILABILITY (simple weekly blocks) -->
+            <div class="card">
+                <h3>Availability</h3>
+                <p class="muted">
+                    Add weekly time blocks you are typically available. (Simple version for prototype.)
+                </p>
+
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label for="availDay">Day</label>
+                        <select id="availDay">
+                            <option value="Mon">Mon</option>
+                            <option value="Tue">Tue</option>
+                            <option value="Wed">Wed</option>
+                            <option value="Thu">Thu</option>
+                            <option value="Fri">Fri</option>
+                            <option value="Sat">Sat</option>
+                            <option value="Sun">Sun</option>
+                        </select>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="availStart">Start time</label>
+                        <input id="availStart" type="time" />
+                    </div>
+
+                    <div class="form-field">
+                        <label for="availEnd">End time</label>
+                        <input id="availEnd" type="time" />
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <button id="btnAddAvailability" class="btn btn-secondary" type="button">
+                        Add availability block
+                    </button>
+                </div>
+
+                <!-- List of availability blocks -->
+                <div id="tutorAvailabilityList" class="list">
+                    <!-- JavaScript will insert availability items here -->
+                </div>
+            </div>
+
+            <!-- TUTOR: ASSIGNED REQUESTS -->
+            <div class="card">
+                <h3>Assigned tutoring requests</h3>
+                <p class="muted">
+                    When a student requests a tutor for a course you are approved for, the app may auto-assign you.
+                </p>
+
+                <div id="tutorRequestsList" class="list">
+                    <!-- JavaScript will insert request items + accept/decline buttons here -->
+                </div>
+            </div>
+
+            <!-- TUTOR: WEEKLY HOURS LOG (simple) -->
+            <div class="card">
+                <h3>Weekly hours report</h3>
+                <p class="muted">
+                    Log time you worked. The app will round UP to the nearest 0.25 hours (15 minutes).
+                </p>
+
+                <!-- Time log form -->
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label for="logDate">Date</label>
+                        <input id="logDate" type="date" />
+                    </div>
+
+                    <div class="form-field">
+                        <label for="logCourse">Course</label>
+                        <select id="logCourse">
+                            <!-- JavaScript will populate courses -->
+                        </select>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="logType">Type</label>
+                        <select id="logType">
+                            <option value="assigned">Assigned (with a student)</option>
+                            <option value="dropin">Drop-in</option>
+                        </select>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="logMinutes">Minutes worked</label>
+                        <input id="logMinutes" type="number" min="1" placeholder="e.g., 50" />
+                        <p class="hint">
+                            Example: 25 minutes → 0.50 hours (rounded up to nearest quarter-hour).
+                        </p>
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <button id="btnSubmitTimeLog" class="btn btn-primary" type="button">
+                        Submit hours
+                    </button>
+                </div>
+
+                <!-- Tutor can see their own submitted logs -->
+                <div id="tutorTimeLogsList" class="list">
+                    <!-- JavaScript will insert time log entries here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- =========================================================
+           SCREEN 4: ADMIN DASHBOARD
+           ========================================================= -->
+        <section id="screenAdmin" class="screen hidden">
+            <h2>Admin Dashboard</h2>
+
+            <p class="muted">
+                Approve tutors for courses. After approval, student requests will auto-assign a tutor.
+                You can also review requests and time logs.
+            </p>
+
+            <!-- ADMIN: PENDING TUTOR APPLICATIONS -->
+            <div class="card">
+                <h3>Tutor applications</h3>
+                <p class="muted">
+                    Approve or reject tutors. Approval is per tutor profile (and includes their selected courses).
+                </p>
+
+                <div id="adminApplicationsList" class="list">
+                    <!-- JavaScript will insert application cards here with Approve/Reject buttons -->
+                </div>
+            </div>
+
+            <!-- ADMIN: ALL REQUESTS + OPTIONAL MANUAL REASSIGN -->
+            <div class="card">
+                <h3>Tutoring requests</h3>
+                <p class="muted">
+                    View all requests. You can reassign a request if needed.
+                </p>
+
+                <div id="adminRequestsList" class="list">
+                    <!-- JavaScript will insert request cards here -->
+                </div>
+            </div>
+
+            <!-- ADMIN: TIME LOGS (WEEKLY HOURS SUBMISSIONS) -->
+            <div class="card">
+                <h3>Time logs (hours reports)</h3>
+                <p class="muted">
+                    Review all submitted hours. (In this prototype, data is stored in localStorage.)
+                </p>
+
+                <!-- Filter by week (optional) -->
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label for="adminWeekStart">Week starting (optional filter)</label>
+                        <input id="adminWeekStart" type="date" />
+                        <p class="hint">
+                            JavaScript can use this to show logs for a specific week.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <button id="btnAdminFilterLogs" class="btn btn-secondary" type="button">
+                        Filter logs
+                    </button>
+                    <button id="btnAdminClearLogFilter" class="btn btn-secondary" type="button">
+                        Clear filter
+                    </button>
+                </div>
+
+                <div id="adminTimeLogsList" class="list">
+                    <!-- JavaScript will insert time log entries here -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!--
+      A simple footer.
+      Not required, but it makes the app feel complete.
+    -->
+    <footer class="app-footer">
+        <p class="muted">
+            Prototype for learning + demo purposes • Data saved in your browser (localStorage)
+        </p>
+    </footer>
+
+    <!--
+      Link to external JavaScript file.
+      "defer" means: download the JS now, but run it AFTER the HTML loads.
+      This is helpful because JS needs the HTML elements to exist before it can use them.
+    -->
+    <script src="app.js" defer></script>
+</body>
+
+</html>
